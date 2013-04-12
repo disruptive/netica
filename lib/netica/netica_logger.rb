@@ -4,11 +4,11 @@ module Netica
     require 'date'
 
     def self.info(message=nil)
-      self.logfile.info("[Netica #{DateTime.now}] #{message}") unless message.nil?
+      self.logfile.info(message) unless message.nil?
     end
 
     def self.debug(message=nil)
-      self.logfile.debug("[Netica #{DateTime.now}] #{message}") unless message.nil?
+      self.logfile.debug(message) unless message.nil?
     end
 
     def self.start_logging(filepath = "netica.log")

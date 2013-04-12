@@ -6,7 +6,7 @@ class Java::NorsysNetica::Node
   end
 
   def decision_node?
-    getKind() == Java::NorsysNetica::Node::DECISION_NODE
+    getType() == Java::NorsysNetica::Node::CONTINUOUS_TYPE
   end
 
   def nature_node?
@@ -36,7 +36,10 @@ class Java::NorsysNetica::Node
   end
 
   def value=(new_value)
-    finding().setReal(new_value) if decision_node?
+    if decision_node?
+      Netica::NeticaLogger.info "Setting #{self.name} to #{new_value}"
+      finding().setReal(new_value)
+    end
   end
 
   def incr
