@@ -1,17 +1,23 @@
 module Netica
   class NeticaLogger
+    require 'logger'
+    require 'date'
+
     def self.info(message=nil)
-      p message
-      #self.logfile.info("[Netica #{DateTime.now}] #{message}") unless message.nil?
+      self.logfile.info("[Netica #{DateTime.now}] #{message}") unless message.nil?
     end
 
     def self.debug(message=nil)
-      p message
-      #self.logfile.debug("[Netica #{DateTime.now}] #{message}") unless message.nil?
+      self.logfile.debug("[Netica #{DateTime.now}] #{message}") unless message.nil?
     end
 
-    # def self.logfile
-    #   @@my_log ||= Logger.new("#{File.dirname(__FILE__)}/log/netica.log")
-    # end
+    def self.start_logging(filepath = "netica.log")
+      file = File.open(filepath, File::WRONLY | File::APPEND)
+      @@my_log = Logger.new(file)
+    end
+
+    def self.logfile
+      @@my_log
+    end
   end
 end
