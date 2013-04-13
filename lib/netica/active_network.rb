@@ -18,7 +18,10 @@ module Netica
     end
 
     def state
-      network.state if network
+      {
+        :network => network.state,
+        :class   => self.class.to_s
+      }
     end
 
     def save
@@ -34,7 +37,7 @@ module Netica
       if Netica::Environment.instance.redis
         stored_state = Netica::Environment.instance.redis.get(token)
         if stored_state
-          active_network = Netica::ActiveNetwork.new(token)
+          active_network = stored_state['class'].constantize.new(token)
           active_network.load_from_saved_state(stored_state)
           return active_network
         end
@@ -44,8 +47,8 @@ module Netica
 
     def load_from_saved_state(json_string)
       hash = JSON.parse(json_string)
-      self.network = BayesNetwork.new(hash["dne_file_path"])
-      network.load_from_state(hash)
+      self.network = BayesNetwork.new(hash["network"]["dne_file_path"])
+      network.load_from_state(hash["network"])
     end
   end
 end
