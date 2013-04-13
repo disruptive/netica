@@ -13,6 +13,10 @@ module Netica
       processor.active_networks << self
     end
 
+    def to_s
+      token
+    end
+
     def incr_node(nodeName)
       network.getNode(nodeName).incr() if network
     end
@@ -37,16 +41,16 @@ module Netica
       if Netica::Environment.instance.redis
         stored_state = Netica::Environment.instance.redis.get(token)
         if stored_state
-          active_network = stored_state['class'].constantize.new(token)
-          active_network.load_from_saved_state(stored_state)
+          hash = JSON.parse(stored_state)
+          active_network = Object.const_get(hash['class']).new(token)
+          active_network.load_from_saved_state(hash)
           return active_network
         end
       end
       return nil
     end
 
-    def load_from_saved_state(json_string)
-      hash = JSON.parse(json_string)
+    def load_from_saved_state(hash)
       self.network = BayesNetwork.new(hash["network"]["dne_file_path"])
       network.load_from_state(hash["network"])
     end
