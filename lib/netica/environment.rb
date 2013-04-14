@@ -10,9 +10,17 @@ module Netica
     @@processor = nil
     @@redis = nil
 
-    def self.engage(settings)
-      NeticaLogger.start_logging(settings[:logfile])
-      @@processor = Java::NorsysNetica::Environ.new(settings[:license_key])
+    def self.engage(settings = {})
+      if settings[:logfile]
+        NeticaLogger.start_logging(settings[:logfile])
+      else
+        NeticaLogger.start_logging
+      end
+      if settings[:license_key]
+        @@processor = Java::NorsysNetica::Environ.new(settings[:license_key])
+      else
+        @@processor = Java::NorsysNetica::Environ.new(nil)
+      end
       if settings[:redis]
         @@redis = Redis.new(settings[:redis])
       end

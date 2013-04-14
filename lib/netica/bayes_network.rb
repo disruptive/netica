@@ -12,7 +12,7 @@ module Netica
     # retrieve a node from the associated network
     # @param String nodeName
     # @return Node
-    def getNode(nodeName)
+    def node(nodeName)
       nodes.select{ |n| n if n.name == nodeName }[0]
     end
 

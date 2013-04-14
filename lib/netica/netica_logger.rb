@@ -11,7 +11,7 @@ module Netica
       self.logfile.debug(message) unless message.nil?
     end
 
-    def self.start_logging(filepath = "netica.log")
+    def self.start_logging(filepath = "./log/netica.log")
       file = File.open(filepath, File::WRONLY | File::APPEND)
       @@my_log = Logger.new(file)
     end

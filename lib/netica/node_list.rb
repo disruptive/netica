@@ -8,7 +8,11 @@ class Java::NorsysNetica::NodeList
   end
 
   def to_s
-    "Node List: #{self.object_id}"
+    "NodeList:#{object_id}"
+  end
+
+  def inspect
+    "#<Java::NorsysNetica::NodeList:#{object_id} size:#{size} nodes:#{nodes.collect{|n| n.to_s }}>"
   end
 
   def free

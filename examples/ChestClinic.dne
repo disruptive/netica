@@ -1,0 +1,110 @@
+// ~->[DNET-1]->~
+
+// File created by an unlicensed user using Netica 5.04 on 10/01/12 at 20:20:06.
+
+bnet ChestClinic {
+autoupdate = FALSE;
+
+node VisitAsia {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (visit, no_visit);
+	statetitles = ("Visited Asia within the last 3 years", );
+	parents = ();
+	probs = 
+		// Visited Asia wit no visit 
+		  (0.01,        0.99);
+	title = "Visit to Asia";
+	};
+
+node Tuberculosis {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (present, absent);
+	parents = (VisitAsia);
+	probs = 
+		// present      absent        // VisitAsia        
+		  (0.05,        0.95,         // Visited Asia wit 
+		   0.01,        0.99);        // no visit         ;
+	};
+
+node Smoking {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (smoker, nonsmoker);
+	parents = ();
+	probs = 
+		// smoker       nonsmoker    
+		  (0.5,         0.5);
+	};
+
+node Cancer {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (present, absent);
+	parents = (Smoking);
+	probs = 
+		// present      absent        // Smoking   
+		  (0.1,         0.9,          // smoker    
+		   0.01,        0.99);        // nonsmoker ;
+	title = "Lung Cancer";
+	};
+
+node TbOrCa {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = DETERMIN;
+	states = (true, false);
+	parents = (Tuberculosis, Cancer);
+	functable = 
+		                    // Tuberculosis Cancer  
+		  (true,            // present      present 
+		   true,            // present      absent  
+		   true,            // absent       present 
+		   false);          // absent       absent  ;
+	equation = "TbOrCa (Tuberculosis, Cancer) = Tuberculosis || Cancer";
+	title = "Tuberculosis or Cancer";
+	};
+
+node XRay {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (abnormal, normal);
+	parents = (TbOrCa);
+	probs = 
+		// abnormal     normal        // TbOrCa 
+		  (0.98,        0.02,         // true   
+		   0.05,        0.95);        // false  ;
+	};
+
+node Bronchitis {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (present, absent);
+	parents = (Smoking);
+	probs = 
+		// present      absent        // Smoking   
+		  (0.6,         0.4,          // smoker    
+		   0.3,         0.7);         // nonsmoker ;
+	};
+
+node Dyspnea {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (present, absent);
+	parents = (TbOrCa, Bronchitis);
+	probs = 
+		// present      absent        // TbOrCa Bronchitis 
+		  (0.9,         0.1,          // true   present    
+		   0.7,         0.3,          // true   absent     
+		   0.8,         0.2,          // false  present    
+		   0.1,         0.9);         // false  absent     ;
+	};
+};
