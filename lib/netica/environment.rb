@@ -9,12 +9,13 @@ module Netica
     @@explorations = []
     @@processor = nil
     @@redis = nil
+    @@logfile = nil
 
     def self.engage(settings = {})
       if settings[:logfile]
-        NeticaLogger.start_logging(settings[:logfile])
+        @@logfile = settings[:logfile]
       else
-        NeticaLogger.start_logging
+        @@logfile = "#{File.dirname(__FILE__)}/../../log/netica.log"
       end
       if settings[:license_key]
         @@processor = Java::NorsysNetica::Environ.new(settings[:license_key])
@@ -37,6 +38,10 @@ module Netica
 
     def redis
       @@redis
+    end
+
+    def logfile_path
+      @@logfile
     end
   end
 end
