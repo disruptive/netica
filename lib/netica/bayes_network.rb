@@ -29,6 +29,7 @@ module Netica
     end
 
     def load_from_state(network_hash)
+      NeticaLogger.info "network_hash => #{network_hash}"
       network_hash["decision_nodes"].each do |node_name, node_value|
         getNode(node_name).value = node_value
       end

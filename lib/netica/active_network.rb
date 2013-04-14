@@ -5,6 +5,7 @@ module Netica
     attr_accessor :network, :token
 
     def initialize(token, filepath = nil)
+      NeticaLogger.info "initializing active network for #{token}"
       self.token   = token
       if filepath
         self.network = BayesNetwork.new(filepath)
