@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = Netica::VERSION
   gem.authors       = ["Jerry Richardson"]
   gem.email         = ["jerry@jerryr.com"]
-  gem.description   = "Netica Bayes Net Management"
-  gem.summary       = "Tools to manage Bayes nets with the NeticaJ API"
+  gem.description   = "Netica Bayes Network Management"
+  gem.summary       = "Tools to manage Bayes Networks with the NeticaJ API"
   gem.homepage      = "http://disruptive.github.io/netica/"
   gem.license       = "MIT"
   gem.platform      = "java"
