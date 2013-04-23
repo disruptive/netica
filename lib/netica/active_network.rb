@@ -3,8 +3,8 @@ module Netica
 
   # provides a persistable object container for a Netica Bayes net.
   class ActiveNetwork
-    class ActiveNetwork::NodeNotFound << RuntimeError; end
-    class ActiveNetwork::NetworkNotFound << RuntimeError; end
+    class ActiveNetwork::NodeNotFound < RuntimeError; end
+    class ActiveNetwork::NetworkNotFound < RuntimeError; end
 
     attr_accessor :network, :token
 
