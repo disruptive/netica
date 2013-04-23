@@ -3,6 +3,9 @@ module Netica
 
   # provides a persistable object container for a Netica Bayes net.
   class ActiveNetwork
+    class ActiveNetwork::NodeNotFound << RuntimeError; end
+    class ActiveNetwork::NetworkNotFound << RuntimeError; end
+
     attr_accessor :network, :token
 
     def initialize(token, filepath = nil)
@@ -24,7 +27,16 @@ module Netica
     # @param nodeName [String] name of the node to be incremented
     # @return [true,false,nil] outcome of the incr() attempt
     def incr_node(nodeName)
-      network.node(nodeName).incr() if network
+      if network
+        node = network.node(nodeName)
+        if node
+          return node.incr()
+        else
+          raise ActiveNetwork::NodeNotFound
+        end
+      else
+        raise ActiveNetwork::NetworkNotFound
+      end
     end
 
     # Export the state of the ActiveNetwork as a Hash
@@ -56,6 +68,7 @@ module Netica
       Netica::Environment.instance.active_networks.each do |an|
         return an if an.token == token
       end
+      Netica::NeticaLogger.info "Network #{token} not found in current instance."
       if Netica::Environment.instance.redis
         stored_state = Netica::Environment.instance.redis.get(token)
         if stored_state
@@ -63,6 +76,8 @@ module Netica
           active_network = Object.const_get(hash['class']).new(token)
           active_network.load_from_saved_state(hash)
           return active_network
+        else
+          Netica::NeticaLogger.info "Network #{token} not found in redis."
         end
       end
       return nil
@@ -74,7 +89,7 @@ module Netica
     # @return [Hash] network state and object class name
     def load_from_saved_state(hash)
       self.network = BayesNetwork.new(hash["network"]["dne_file_path"])
-      network.load_from_state(hash["network"])
+      self.network.load_from_state(hash["network"])
     end
   end
 end
