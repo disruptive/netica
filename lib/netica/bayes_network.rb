@@ -9,9 +9,11 @@ module Netica
       end
     end
 
-    # retrieve a node from the associated network
-    # @param String nodeName
-    # @return Node
+    # retrieve the node from the associated network whose name matches
+    # the "nodeName" supplied.
+    #
+    # @param nodeName [String] Name of the node to find
+    # @return [Node]
     def node(nodeName)
       nodes.select{ |n| n if n.name == nodeName }[0]
     end
@@ -31,7 +33,7 @@ module Netica
     def load_from_state(network_hash)
       NeticaLogger.info "network_hash => #{network_hash}"
       network_hash["decision_nodes"].each do |node_name, node_value|
-        getNode(node_name).value = node_value
+        node(node_name).value = node_value
       end
     end
 

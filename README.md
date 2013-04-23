@@ -65,14 +65,13 @@ Then, re-read the value of the Belief node.
     0.09241089224815369
     => 0.09241089224815369
 
+## Release Notes
 
-## Contributing
+### Version 0.0.6
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+* Changed BayesNetwork#getNode to BayesNetwork#node
+* Find a location for the NeticaJ.jar file using `rake netica:java_library_path`
+* Expand documentation
 
 ## Legal
 

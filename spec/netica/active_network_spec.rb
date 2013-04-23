@@ -22,7 +22,7 @@ describe Netica::ActiveNetwork do
         @active_network.network.nodes.length.should == 8
       end
 
-      it "should export it state as a hash" do
+      it "should export its state as a hash" do
         @active_network.network.state.should be_an_instance_of(Hash)
       end
 

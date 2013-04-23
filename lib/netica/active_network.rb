@@ -1,6 +1,7 @@
 module Netica
   require 'json'
 
+  # provides a persistable object container for a Netica Bayes net.
   class ActiveNetwork
     attr_accessor :network, :token
 
@@ -18,10 +19,18 @@ module Netica
       token
     end
 
+    # Increment a specified network node
+    #
+    # @param nodeName [String] name of the node to be incremented
+    # @return [true,false,nil] outcome of the incr() attempt
     def incr_node(nodeName)
-      network.getNode(nodeName).incr() if network
+      network.node(nodeName).incr() if network
     end
 
+    # Export the state of the ActiveNetwork as a Hash
+    #
+    # @param nodeName [String] name of the node to be incremented
+    # @return [Hash] network state and object class name
     def state
       {
         :network => network.state,
@@ -29,12 +38,20 @@ module Netica
       }
     end
 
+    # Save ActiveNetwork to an associated redis store, if one is defined.
+    #
+    # @return [true,false,nil] outcome of redis.set, or nil if redis is not found
     def save
       if Netica::Environment.instance.redis
-        Netica::Environment.instance.redis.set(token, JSON.dump(state))
+        return Netica::Environment.instance.redis.set(token, JSON.dump(state))
       end
     end
 
+    # Retrieve ActiveNetwork from current Netica Environment instance
+    # or an associated redis store, if one is defined.
+    #
+    # @param token [String] identifying token for ActiveNetwork sought
+    # @return [ActiveNetwork] ActiveNetwork object found
     def self.find(token)
       Netica::Environment.instance.active_networks.each do |an|
         return an if an.token == token
@@ -51,6 +68,10 @@ module Netica
       return nil
     end
 
+    # Export the state of the ActiveNetwork as a Hash
+    #
+    # @param hash [Hash] network state to be restored
+    # @return [Hash] network state and object class name
     def load_from_saved_state(hash)
       self.network = BayesNetwork.new(hash["network"]["dne_file_path"])
       network.load_from_state(hash["network"])

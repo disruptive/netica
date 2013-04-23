@@ -11,6 +11,10 @@ module Netica
     @@redis = nil
     @@logfile = nil
 
+    # Initializes logging, a Netica Environ object and a connection to
+    # redis, if defined.
+    #
+    # @param settings [Hash] Settings for initialization
     def self.engage(settings = {})
       if settings[:logfile]
         @@logfile = settings[:logfile]
