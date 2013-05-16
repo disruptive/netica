@@ -7,12 +7,12 @@ class Java::NorsysNetica::Node
    Java::NorsysNetica::Node::DECISION_NODE => :decision,
    Java::NorsysNetica::Node::UTILITY_NODE => :utility,
    Java::NorsysNetica::Node::CONSTANT_NODE => :constant,
-   Java::NorsysNetica::Node::DISCONNECTED_NODE => :disconnected,
+   Java::NorsysNetica::Node::DISCONNECTED_NODE => :disconnected
   }
 
   NODE_TYPES = {
    Java::NorsysNetica::Node::DISCRETE_TYPE => :nature,
-   Java::NorsysNetica::Node::CONTINUOUS_TYPE => :decision,
+   Java::NorsysNetica::Node::CONTINUOUS_TYPE => :decision
   }
 
   def name
@@ -60,11 +60,14 @@ class Java::NorsysNetica::Node
   end
 
   def value=(new_value)
-    Netica::NeticaLogger.info "Setting #{self.name} to #{new_value}"
     if decision_node?
+      Netica::NeticaLogger.info "Decision Node: Setting #{kind} #{type} node #{self.name} to #{new_value}"
       finding().setReal(new_value)
     elsif nature_node?
+      Netica::NeticaLogger.info "Nature Node: Setting #{kind} #{type} node #{self.name} to #{new_value}"
       finding.enterState(new_value)
+    else
+      throw "Could not set value for #{kind} #{type} node #{self.name} to #{new_value}"
     end
   end
 

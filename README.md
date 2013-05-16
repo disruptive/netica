@@ -67,6 +67,10 @@ Then, re-read the value of the Belief node.
 
 ## Release Notes
 
+### Version 0.0.7
+
+* Added Node Set identification and collection to BayesNetwork
+
 ### Version 0.0.6
 
 * Changed BayesNetwork#getNode to BayesNetwork#node

@@ -1,5 +1,7 @@
 module Netica
   class BayesNetwork
+    require 'json'
+
     attr_accessor :current_network, :dne_file_path
 
     def initialize(dne_file_path = nil)
@@ -30,6 +32,14 @@ module Netica
       nodes.collect{ |n| n if n.nature_node? }.compact
     end
 
+    def node_sets
+      current_network.getAllNodesets(false).split(",").collect{|ns_name| node_set(ns_name)}
+    end
+
+    def node_set(name)
+      nodes.collect{ |n| n if n.isInNodeset(name) }.compact.sort{|a,b| b.beliefs <=> a.beliefs }
+    end
+
     def load_from_state(network_hash)
       NeticaLogger.info "Loading state from network_hash => #{network_hash}"
       network_hash["decision_nodes"].each do |node_name, node_value|
@@ -48,15 +58,29 @@ module Netica
       node_hash
     end
 
+    # def analyze(json)
+    #   analysis_hash = JSON.parse(json)
+    #   analysis_hash['input_nodes'].each do |nodeName, value|
+    #     node(nodeName).enterValue(value)
+    #   end
+    #
+    #   outcome = {}
+    #   analysis_hash['output_nodes'].each do |nodeName|
+    #     outcome[nodeName] = node(nodeName).value
+    #   end
+    #   outcome
+    #   #JSON.dump(:results => outcome)
+    # end
+
     private
 
     def load_dne_file
       NeticaLogger.info "Looking for BayesNet .dne file at #{dne_file_path}..."
       streamer = Java::NorsysNetica::Streamer.new(dne_file_path)
       self.current_network = Java::NorsysNetica::Net.new(streamer)
-      self.current_network.compile()
       NeticaLogger.info "Initialized BayesNet -- #{self.current_network.object_id}"
       self.decision_nodes.each{ |n| n.value = 0 }
+      self.current_network.compile()
     end
   end
 end
