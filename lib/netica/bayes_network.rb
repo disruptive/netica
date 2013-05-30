@@ -58,19 +58,22 @@ module Netica
       node_hash
     end
 
-    # def analyze(json)
-    #   analysis_hash = JSON.parse(json)
-    #   analysis_hash['input_nodes'].each do |nodeName, value|
-    #     node(nodeName).enterValue(value)
-    #   end
-    #
-    #   outcome = {}
-    #   analysis_hash['output_nodes'].each do |nodeName|
-    #     outcome[nodeName] = node(nodeName).value
-    #   end
-    #   outcome
-    #   #JSON.dump(:results => outcome)
-    # end
+    def analyze(input_values, output_nodes)
+      outcome = []
+      input_values.each do |value_collection|
+        id = value_collection.delete("id")
+        value_collection.each do |nodeName, value|
+          node(nodeName).enterValue(value)
+        end
+        result = { :id => id }
+        output_nodes.each do |nodeName|
+          result[nodeName] = node(nodeName).value
+        end
+        outcome << result
+        current_network.retractFindings
+      end
+      outcome
+    end
 
     private
 

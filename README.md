@@ -67,6 +67,8 @@ Then, re-read the value of the Belief node.
 
 ## Release Notes
 
+* Added Batch Processing as BayesNetwork#analyze, which takes a hash of node names and their values including an "id", and a list of output nodes, and returns the resulting values of the output nodes, along with the "id".
+
 ### Version 0.0.7
 
 * Added Node Set identification and collection to BayesNetwork
