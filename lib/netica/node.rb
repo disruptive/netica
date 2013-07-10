@@ -97,7 +97,7 @@ class Java::NorsysNetica::Node
 
   def free
     begin
-      NeticaLogger.info "Deleting #{self.to_s}"
+      Netica::NeticaLogger.info "Deleting #{self.to_s}"
       finalize()
       delete()
       states.each{|s| s==nil or s.free() }

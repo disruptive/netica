@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Netica::ActiveNetwork do
   describe "#new" do
     before(:all) do
+      Java::NorsysNetica::Environ.__persistent__ = true
       Netica::Environment.engage
     end
     after(:all) do

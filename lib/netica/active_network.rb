@@ -6,10 +6,12 @@ module Netica
     class ActiveNetwork::NodeNotFound < RuntimeError; end
     class ActiveNetwork::NetworkNotFound < RuntimeError; end
 
-    attr_accessor :network, :token
+    attr_accessor :network, :token, :created_at, :updated_at, :reloaded_at
 
     def initialize(token, filepath = nil)
       Netica::NeticaLogger.info "initializing active network for #{token}"
+      self.created_at = Time.now
+      self.updated_at = Time.now
       self.token = token
       if filepath
         self.network = BayesNetwork.new(filepath)
@@ -30,6 +32,7 @@ module Netica
       if network
         node = network.node(nodeName)
         if node
+          self.updated_at = Time.now
           return node.incr()
         else
           raise ActiveNetwork::NodeNotFound
@@ -41,12 +44,14 @@ module Netica
 
     # Export the state of the ActiveNetwork as a Hash
     #
-    # @param nodeName [String] name of the node to be incremented
     # @return [Hash] network state and object class name
     def state
       {
-        :network => network.state,
-        :class   => self.class.to_s
+        :network     => network.state,
+        :class       => self.class.to_s,
+        :created_at  => self.created_at,
+        :updated_at  => self.updated_at,
+        :reloaded_at => self.reloaded_at
       }
     end
 
@@ -75,6 +80,7 @@ module Netica
           hash = JSON.parse(stored_state)
           active_network = Object.const_get(hash['class']).new(token)
           active_network.load_from_saved_state(hash)
+          Netica::NeticaLogger.info "Network #{token} reloaded from saved state: #{hash}"
           return active_network
         else
           Netica::NeticaLogger.info "Network #{token} not found in redis."
@@ -90,6 +96,7 @@ module Netica
     def load_from_saved_state(hash)
       self.network = BayesNetwork.new(hash["network"]["dne_file_path"])
       self.network.load_from_state(hash["network"])
+      self.reloaded_at = Time.now
     end
   end
 end

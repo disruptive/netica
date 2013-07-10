@@ -5,6 +5,7 @@ module Netica
     attr_accessor :current_network, :dne_file_path
 
     def initialize(dne_file_path = nil)
+      Netica::NeticaLogger.info "Initializing #{self.class} #{self.object_id}"
       if dne_file_path
         self.dne_file_path = dne_file_path
         load_dne_file
@@ -41,15 +42,19 @@ module Netica
     end
 
     def load_from_state(network_hash)
-      NeticaLogger.info "Loading state from network_hash => #{network_hash}"
+      Netica::NeticaLogger.info "Loading state from network_hash => #{network_hash}"
       network_hash["decision_nodes"].each do |node_name, node_value|
-        NeticaLogger.info "Setting #{node_name} => #{node_value}"
+        Netica::NeticaLogger.info "Setting #{node_name} => #{node_value}"
         node(node_name).value = node_value
       end
     end
 
     def state
-      { :dne_file_path => dne_file_path, :decision_nodes => node_hash(decision_nodes), :nature_nodes => node_hash(nature_nodes) }
+      {
+        :dne_file_path  => dne_file_path,
+        :decision_nodes => node_hash(decision_nodes),
+        :nature_nodes   => node_hash(nature_nodes)
+      }
     end
 
     def node_hash(nodes)
