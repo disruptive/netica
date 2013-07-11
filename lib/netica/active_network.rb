@@ -29,6 +29,7 @@ module Netica
     # @param nodeName [String] name of the node to be incremented
     # @return [true,false,nil] outcome of the incr() attempt
     def incr_node(nodeName)
+      Netica::NeticaLogger.info "Incrementing #{nodeName} for #{token}, object_id: #{self.object_id}."
       if network
         node = network.node(nodeName)
         if node
