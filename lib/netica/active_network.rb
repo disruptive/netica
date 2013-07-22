@@ -71,10 +71,11 @@ module Netica
     # @param token [String] identifying token for ActiveNetwork sought
     # @return [ActiveNetwork] ActiveNetwork object found
     def self.find(token)
-      Netica::Environment.instance.active_networks.each do |an|
+      environment = Netica::Environment.instance
+      environment.network_container.each do |an|
         return an if an.token == token
       end
-      Netica::NeticaLogger.info "Network #{token} not found in current instance."
+      Netica::NeticaLogger.info "Network #{token} not found in current instance #{environment.object_id}."
       if Netica::Environment.instance.redis
         stored_state = Netica::Environment.instance.redis.get(token)
         if stored_state

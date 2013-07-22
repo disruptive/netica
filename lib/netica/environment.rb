@@ -5,7 +5,7 @@ module Netica
   class Environment
     include Singleton
     
-    @@explorations = []
+    @@network_container = []
     @@processor = nil
     @@redis = nil
     @@logfile = nil
@@ -30,6 +30,14 @@ module Netica
       if settings[:redis]
         @@redis = Redis.new(settings[:redis])
       end
+      
+      if settings[:network_container]
+        @@network_container = settings[:network_container]
+      else
+        @@network_container = @@processor.active_networks
+      end
+      
+      NeticaLogger.info "@@network_container is #{@@network_container.class} #{@@network_container.object_id}."  
       NeticaLogger.info "Initializing the Netica Environment #{@@processor.object_id}"
     end
 
@@ -38,7 +46,7 @@ module Netica
     end
 
     def active_networks
-      @@processor.active_networks
+      @@network_container
     end
 
     def redis
