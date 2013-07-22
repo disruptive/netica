@@ -25,8 +25,8 @@ module Netica
       else
         @@processor = Java::NorsysNetica::Environ.new(nil)
       end
-      @@processor.control_concurrency("ExternalThreads", "OptimizeSafely")
-      #@@processor.control_concurrency("ExternalThreads", "Serialize")
+      #@@processor.control_concurrency("ExternalThreads", "OptimizeSafely")
+      @@processor.control_concurrency("ExternalThreads", "Serialize")
       if settings[:redis]
         @@redis = Redis.new(settings[:redis])
       end
