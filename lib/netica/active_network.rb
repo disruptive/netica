@@ -36,7 +36,7 @@ module Netica
           self.updated_at = Time.now
           return node.incr()
         else
-          raise ActiveNetwork::NodeNotFound
+          raise ActiveNetwork::NodeNotFound, "Node #{nodeName} not found in network."
         end
       else
         raise ActiveNetwork::NetworkNotFound
