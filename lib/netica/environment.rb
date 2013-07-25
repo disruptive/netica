@@ -48,6 +48,10 @@ module Netica
     def active_networks
       @@network_container
     end
+    
+    def network_container
+      @@network_container
+    end
 
     def redis
       @@redis

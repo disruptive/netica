@@ -12,5 +12,15 @@ describe Netica::Environment do
       Netica::NeticaLogger.info "Test logfile entry"
       Netica::Environment.instance.processor.finalize
     end
+    
+    context "with a specified storage container" do
+      it 'should store active_networks in the storage container' do
+        @active_networks = []
+        Netica::Environment.engage(:network_container => @active_networks)
+        Netica::ActiveNetwork.new("fake_token_identifier", "#{File.dirname(__FILE__)}/../../examples/ChestClinic.dne")
+        @active_networks.length.should == 1
+        Netica::Environment.instance.processor.finalize
+      end
+    end
   end
 end

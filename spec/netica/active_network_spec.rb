@@ -26,6 +26,10 @@ describe Netica::ActiveNetwork do
       it "should export its state as a hash" do
         @active_network.network.state.should be_an_instance_of(Hash)
       end
+      
+      it "should be returned when searched for" do
+        Netica::ActiveNetwork.find("fake_token_identifier").should === @active_network
+      end
 
       context "the tuberculosis node" do
         it "should be less than 0.02 initially" do

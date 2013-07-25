@@ -72,6 +72,7 @@ module Netica
     # @return [ActiveNetwork] ActiveNetwork object found
     def self.find(token)
       environment = Netica::Environment.instance
+      Netica::NeticaLogger.info "Searching in #{environment.network_container.class} #{environment.network_container.object_id} for #{token}."
       environment.network_container.each do |an|
         return an if an.token == token
       end
