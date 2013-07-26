@@ -6,7 +6,7 @@ module Netica
     class ActiveNetwork::NodeNotFound < RuntimeError; end
     class ActiveNetwork::NetworkNotFound < RuntimeError; end
 
-    attr_accessor :network, :token, :created_at, :updated_at, :reloaded_at
+    attr_accessor :network, :token, :created_at, :updated_at, :reloaded_at, :in_use
 
     def initialize(token, filepath = nil)
       Netica::NeticaLogger.info "initializing active network for #{token}"
@@ -72,9 +72,15 @@ module Netica
     # @return [ActiveNetwork] ActiveNetwork object found
     def self.find(token)
       environment = Netica::Environment.instance
-      Netica::NeticaLogger.info "Searching in #{environment.network_container.class} #{environment.network_container.object_id} for #{token}."
+      Netica::NeticaLogger.info "Searching in #{environment.network_container.class} #{environment.network_container.object_id} (length: #{environment.network_container.length}) for #{token}."
       environment.network_container.each do |an|
-        return an if an.token == token
+        if an.token == token
+          until !an.in_use
+            Netica::NeticaLogger.info "Network #{token} is locked."
+            wait 1000
+          end
+          return an
+        end
       end
       Netica::NeticaLogger.info "Network #{token} not found in current instance #{environment.object_id}."
       if Netica::Environment.instance.redis
