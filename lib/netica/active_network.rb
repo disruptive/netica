@@ -9,10 +9,12 @@ module Netica
     attr_accessor :network, :token, :created_at, :updated_at, :reloaded_at, :in_use
 
     def initialize(token, filepath = nil)
-      Netica::NeticaLogger.info "initializing active network for #{token}"
+      Netica::NeticaLogger.info "Initializing #{self.class} for #{token}."
       self.created_at = Time.now
       self.updated_at = Time.now
-      self.token = token
+      self.token      = token
+      self.in_use     = false
+      
       if filepath
         self.network = BayesNetwork.new(filepath)
       end
