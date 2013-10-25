@@ -79,7 +79,7 @@ module Netica
         if an.token == token
           until !an.in_use
             Netica::NeticaLogger.info "Network #{token} is locked."
-            wait 1000
+            sleep 1
           end
           return an
         end

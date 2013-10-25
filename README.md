@@ -67,6 +67,10 @@ Then, re-read the value of the Belief node.
 
 ## Release Notes
 
+### Version 0.0.17
+
+* We don't wait, we sleep when a network is locked.
+
 ### Version 0.0.16
 
 * Add ActiveNetwork#destroy
