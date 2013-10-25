@@ -67,6 +67,32 @@ Then, re-read the value of the Belief node.
 
 ## Release Notes
 
+### Version 0.0.16
+
+* Add ActiveNetwork#destroy
+
+### Version 0.0.15
+
+* Lock in-use ActiveNetworks to prevent editing collisions
+
+### Version 0.0.14
+
+* User may specify optional container for Active Networks
+
+### Version 0.0.11
+
+* Move ActiveNetworks inside Environ
+
+### Version 0.0.10
+
+* Log Specifics of Node Changes
+
+### Version 0.0.9
+
+* Attempt to make Netica Environ a Singleton in JRuby 1.7
+
+### Version 0.0.8
+
 * Added Batch Processing as BayesNetwork#analyze, which takes a hash of node names and their values including an "id", and a list of output nodes, and returns the resulting values of the output nodes, along with the "id".
 
 ### Version 0.0.7

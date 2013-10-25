@@ -99,6 +99,14 @@ module Netica
       end
       return nil
     end
+    
+    def destroy
+      environment = Netica::Environment.instance
+      environment.network_container.delete_if{|network| network.token == token}
+      if environment.redis
+        environment.redis.del(token)
+      end
+    end
 
     # Export the state of the ActiveNetwork as a Hash
     #

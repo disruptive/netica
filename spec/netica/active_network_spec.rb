@@ -1,11 +1,14 @@
 require 'spec_helper'
 
 describe Netica::ActiveNetwork do
+
   describe "#new" do
+    
     before(:all) do
       Java::NorsysNetica::Environ.__persistent__ = true
       Netica::Environment.engage
     end
+    
     after(:all) do
       Netica::Environment.instance.processor.finalize
     end
@@ -40,6 +43,12 @@ describe Netica::ActiveNetwork do
           @active_network.network.node("XRay").value = "abnormal"
           @active_network.network.node("Tuberculosis").value("present").should be_greater_than 0.092
         end
+      end
+      
+      it "should be deletable" do
+        Netica::Environment.instance.active_networks.length.should eq(1)
+        @active_network.destroy
+        Netica::Environment.instance.active_networks.length.should eq(0)
       end
     end
   end
