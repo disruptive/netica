@@ -100,12 +100,19 @@ module Netica
       return nil
     end
     
-    def destroy
+    def destroy(memory = true, storage = true)
+      outcome = { token: token, deletion: { memory: nil, redis: nil}}
       environment = Netica::Environment.instance
-      environment.network_container.delete_if{|network| network.token == token}
-      if environment.redis
-        environment.redis.del(token)
+
+      if memory
+        rejection = environment.network_container.reject!{|network| network.token == token}
+        outcome[:deletion][:memory] = rejection.is_a?(Array)
       end
+        
+      if environment.redis && storage
+        outcome[:deletion][:redis] = (environment.redis.del(token) > 0)
+      end
+      outcome
     end
 
     # Export the state of the ActiveNetwork as a Hash

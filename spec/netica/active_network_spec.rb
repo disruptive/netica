@@ -47,8 +47,50 @@ describe Netica::ActiveNetwork do
       
       it "should be deletable" do
         Netica::Environment.instance.active_networks.length.should eq(1)
-        @active_network.destroy
+        outcome = @active_network.destroy
+        outcome[:deletion][:memory].should be_true
+        outcome[:deletion][:redis].should be_nil
         Netica::Environment.instance.active_networks.length.should eq(0)
+      end
+    end
+  end
+  
+  context "with redis" do
+    before(:all) do
+      Java::NorsysNetica::Environ.__persistent__ = true
+      redis_settings = { :redis => { :host => "127.0.0.1", :port => 6379 }}
+      Netica::Environment.engage(redis_settings)
+      @redis = Redis.new(redis_settings)
+    end
+    
+    after(:all) do
+      Netica::Environment.instance.processor.finalize
+    end
+    
+    context "with ChestClinic.dne" do
+      before(:all) do
+        @active_network = Netica::ActiveNetwork.new("fake_token_identifier", "#{File.dirname(__FILE__)}/../../examples/ChestClinic.dne")
+        @active_network_token = @active_network.token
+      end
+
+      describe "#save" do
+        it "should be savable" do
+          @redis.get(@active_network_token).should be_nil
+          @active_network.save
+          @redis.get(@active_network_token).should_not be_nil
+        end
+      end
+    
+      describe "#destroy" do
+        it "should be deletable" do
+          Netica::Environment.instance.active_networks.length.should eq(1)
+          @redis.get(@active_network_token).should_not be_nil
+          outcome = @active_network.destroy
+          outcome[:deletion][:memory].should be_true
+          outcome[:deletion][:redis].should be_true
+          @redis.get(@active_network_token).should be_nil
+          Netica::Environment.instance.active_networks.length.should eq(0)
+        end
       end
     end
   end
