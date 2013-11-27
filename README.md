@@ -67,6 +67,11 @@ Then, re-read the value of the Belief node.
 
 ## Release Notes
 
+### Version 0.0.18
+
+* Return a hash from ActiveNetwork#destroy indicating the outcome of deletion in each storage location. 
+* Make the java_library_path task visible in `rake -vT`
+
 ### Version 0.0.17
 
 * We don't wait, we sleep when a network is locked.

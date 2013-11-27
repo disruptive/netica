@@ -100,6 +100,11 @@ module Netica
       return nil
     end
     
+    # Destroy the ActiveNetwork
+    #
+    # @param memory [Boolean] destroy the in-memory object?, default is `true`
+    # @param storage [Boolean] destroy object in redis?, default is `true`
+    # @return [Hash] outcome of deletion attempts per storage location
     def destroy(memory = true, storage = true)
       outcome = { token: token, deletion: { memory: nil, redis: nil}}
       environment = Netica::Environment.instance
@@ -115,14 +120,13 @@ module Netica
       outcome
     end
 
-    # Export the state of the ActiveNetwork as a Hash
+    # Load ActiveNetwork from a saved state
     #
     # @param hash [Hash] network state to be restored
-    # @return [Hash] network state and object class name
     def load_from_saved_state(hash)
       self.network = BayesNetwork.new(hash["network"]["dne_file_path"])
-      self.network.load_from_state(hash["network"])
       self.reloaded_at = Time.now
+      self.network.load_from_state(hash["network"])
     end
   end
 end
