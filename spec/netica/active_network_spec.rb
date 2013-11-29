@@ -92,6 +92,23 @@ describe Netica::ActiveNetwork do
           Netica::Environment.instance.active_networks.length.should eq(0)
         end
       end
+      
+      describe "#destroy_by_token" do
+        context "A stored active network" do
+          it "should be deletable" do
+            @active_network.save
+            @active_network.destroy(true, false)
+            @redis.get(@active_network_token).should be_true
+            
+            outcome = Netica::ActiveNetwork.destroy_by_token(@active_network_token)
+            outcome[:deletion][:memory].should be_nil
+            outcome[:deletion][:redis].should be_true
+            
+            @redis.get(@active_network_token).should be_nil
+            Netica::Environment.instance.active_networks.length.should eq(0)
+          end
+        end
+      end
     end
   end
 end

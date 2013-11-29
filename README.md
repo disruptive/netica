@@ -67,6 +67,10 @@ Then, re-read the value of the Belief node.
 
 ## Release Notes
 
+### Version 0.0.20
+
+Delete a stored network by token with ActiveNetwork#destroy_by_token.
+
 ### Version 0.0.19
 
 Add `load_from_storage` parameter to ActiveNetwork#find so we can retrieve the state of a network in storage without instantiating it. Defaults to true.

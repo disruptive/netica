@@ -116,12 +116,26 @@ module Netica
         outcome[:deletion][:memory] = rejection.is_a?(Array)
       end
         
-      if environment.redis && storage
+      if environment.redis && storage == true
         outcome[:deletion][:redis] = (environment.redis.del(token) > 0)
       end
       outcome
     end
+    
+    # Destroy a saved network
+    #
+    # @return [Hash] outcome of deletion attempts per storage location
+    def self.destroy_by_token(token)
+      outcome = { token: token, deletion: { memory: nil, redis: nil}}
+      environment = Netica::Environment.instance
 
+      if environment.redis
+        outcome[:deletion][:redis] = (environment.redis.del(token) > 0)
+      end
+
+      outcome
+    end
+    
     # Load ActiveNetwork from a saved state
     #
     # @param hash [Hash] network state to be restored
