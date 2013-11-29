@@ -72,7 +72,7 @@ module Netica
     #
     # @param token [String] identifying token for ActiveNetwork sought
     # @return [ActiveNetwork] ActiveNetwork object found
-    def self.find(token)
+    def self.find(token, load_from_storage = true)
       environment = Netica::Environment.instance
       Netica::NeticaLogger.info "Searching in #{environment.network_container.class} #{environment.network_container.object_id} (length: #{environment.network_container.length}) for #{token}."
       environment.network_container.each do |an|
@@ -87,12 +87,14 @@ module Netica
       Netica::NeticaLogger.info "Network #{token} not found in current instance #{environment.object_id}."
       if Netica::Environment.instance.redis
         stored_state = Netica::Environment.instance.redis.get(token)
-        if stored_state
+        if stored_state && load_from_storage
           hash = JSON.parse(stored_state)
           active_network = Object.const_get(hash['class']).new(token)
           active_network.load_from_saved_state(hash)
           Netica::NeticaLogger.info "Network #{token} reloaded from saved state: #{hash}"
           return active_network
+        elsif stored_state
+          return stored_state
         else
           Netica::NeticaLogger.info "Network #{token} not found in redis."
         end

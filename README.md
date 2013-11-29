@@ -67,6 +67,10 @@ Then, re-read the value of the Belief node.
 
 ## Release Notes
 
+### Version 0.0.19
+
+Add `load_from_storage` parameter to ActiveNetwork#find so we can retrieve the state of a network in storage without instantiating it. Defaults to true.
+
 ### Version 0.0.18
 
 * Return a hash from ActiveNetwork#destroy indicating the outcome of deletion in each storage location. 

@@ -31,7 +31,7 @@ describe Netica::ActiveNetwork do
       end
       
       it "should be returned when searched for" do
-        Netica::ActiveNetwork.find("fake_token_identifier").should === @active_network
+        Netica::ActiveNetwork.find("fake_token_identifier", false).should === @active_network
       end
 
       context "the tuberculosis node" do
