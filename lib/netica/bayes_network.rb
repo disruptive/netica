@@ -42,10 +42,15 @@ module Netica
     end
 
     def load_from_state(network_hash)
-      Netica::NeticaLogger.info "Loading state from network_hash => #{network_hash}"
       network_hash["decision_nodes"].each do |node_name, node_value|
         Netica::NeticaLogger.info "Setting #{node_name} => #{node_value}"
         node(node_name).value = node_value
+      end
+      
+      network_hash["nature_nodes"].each do |node_name, node_value_hash|
+        next unless node_name == 'XRay'
+        Netica::NeticaLogger.info "Setting #{node_name} => #{node_value_hash}"
+        node(node_name).value = node_value_hash
       end
     end
 

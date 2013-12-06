@@ -6,7 +6,7 @@ module Netica
     class ActiveNetwork::NodeNotFound < RuntimeError; end
     class ActiveNetwork::NetworkNotFound < RuntimeError; end
 
-    attr_accessor :network, :token, :created_at, :updated_at, :reloaded_at, :in_use
+    attr_accessor :network, :token, :created_at, :updated_at, :reloaded_at, :in_use, :filepath
 
     def initialize(token, filepath = nil)
       Netica::NeticaLogger.info "Initializing #{self.class} for #{token}."
@@ -16,7 +16,8 @@ module Netica
       self.in_use     = false
       
       if filepath
-        self.network = BayesNetwork.new(filepath)
+        self.filepath = filepath
+        self.network  = BayesNetwork.new(filepath)
       end
       processor = Netica::Environment.instance
       processor.active_networks << self
@@ -58,21 +59,11 @@ module Netica
       }
     end
 
-    # Save ActiveNetwork to an associated redis store, if one is defined.
-    #
-    # @return [true,false,nil] outcome of redis.set, or nil if redis is not found
-    def save
-      if Netica::Environment.instance.redis
-        return Netica::Environment.instance.redis.set(token, JSON.dump(state))
-      end
-    end
-
     # Retrieve ActiveNetwork from current Netica Environment instance
-    # or an associated redis store, if one is defined.
     #
     # @param token [String] identifying token for ActiveNetwork sought
     # @return [ActiveNetwork] ActiveNetwork object found
-    def self.find(token, load_from_storage = true)
+    def self.find(token)
       environment = Netica::Environment.instance
       Netica::NeticaLogger.info "Searching in #{environment.network_container.class} #{environment.network_container.object_id} (length: #{environment.network_container.length}) for #{token}."
       environment.network_container.each do |an|
@@ -85,62 +76,31 @@ module Netica
         end
       end
       Netica::NeticaLogger.info "Network #{token} not found in current instance #{environment.object_id}."
-      if Netica::Environment.instance.redis
-        stored_state = Netica::Environment.instance.redis.get(token)
-        if stored_state && load_from_storage
-          hash = JSON.parse(stored_state)
-          active_network = Object.const_get(hash['class']).new(token)
-          active_network.load_from_saved_state(hash)
-          Netica::NeticaLogger.info "Network #{token} reloaded from saved state: #{hash}"
-          return active_network
-        elsif stored_state
-          return stored_state
-        else
-          Netica::NeticaLogger.info "Network #{token} not found in redis."
-        end
-      end
       return nil
     end
     
     # Destroy the ActiveNetwork
     #
-    # @param memory [Boolean] destroy the in-memory object?, default is `true`
-    # @param storage [Boolean] destroy object in redis?, default is `true`
-    # @return [Hash] outcome of deletion attempts per storage location
-    def destroy(memory = true, storage = true)
-      outcome = { token: token, deletion: { memory: nil, redis: nil}}
+    # @return [Hash] outcome of deletion attempt
+    def destroy
+      outcome = { token: token, deletion: { memory: nil }}
       environment = Netica::Environment.instance
-
-      if memory
-        rejection = environment.network_container.reject!{|network| network.token == token}
-        outcome[:deletion][:memory] = rejection.is_a?(Array)
-      end
-        
-      if environment.redis && storage == true
-        outcome[:deletion][:redis] = (environment.redis.del(token) > 0)
-      end
+      rejection = environment.network_container.reject!{|network| network.token == token}
+      outcome[:deletion][:memory] = rejection.is_a?(Array)
       outcome
     end
     
-    # Destroy a saved network
-    #
-    # @return [Hash] outcome of deletion attempts per storage location
-    def self.destroy_by_token(token)
-      outcome = { token: token, deletion: { memory: nil, redis: nil}}
-      environment = Netica::Environment.instance
-
-      if environment.redis
-        outcome[:deletion][:redis] = (environment.redis.del(token) > 0)
-      end
-
-      outcome
-    end
     
-    # Load ActiveNetwork from a saved state
+    # Load ActiveNetwork from a Hash
     #
     # @param hash [Hash] network state to be restored
     def load_from_saved_state(hash)
-      self.network = BayesNetwork.new(hash["network"]["dne_file_path"])
+      if filepath
+        self.network = BayesNetwork.new(filepath)
+      else
+        self.filepath = hash["network"]["dne_file_path"]
+        self.network = BayesNetwork.new(hash["network"]["dne_file_path"])
+      end
       self.reloaded_at = Time.now
       self.network.load_from_state(hash["network"])
     end

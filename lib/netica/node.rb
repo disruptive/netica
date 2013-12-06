@@ -65,7 +65,16 @@ class Java::NorsysNetica::Node
       finding().setReal(new_value)
     elsif nature_node?
       Netica::NeticaLogger.info "Nature Node: Setting #{kind} #{type} node #{self.name} to #{new_value}"
-      finding.enterState(new_value)
+      if new_value.is_a?(Hash)
+        value_array = []
+        states.each do |s|
+          value_array << new_value[s.name]
+        end
+        finding().enter_likelihood(value_array)
+      else
+        finding.enterState(new_value)
+      end
+      Netica::NeticaLogger.info beliefs
     else
       throw "Could not set value for #{kind} #{type} node #{self.name} to #{new_value}"
     end
