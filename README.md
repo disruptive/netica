@@ -67,6 +67,10 @@ Then, re-read the value of the Belief node.
 
 ## Release Notes
 
+### Version 0.0.21
+
+Search multiple locations for NeticaJ.jar. 
+
 ### Version 0.0.20
 
 Delete a stored network by token with ActiveNetwork#destroy_by_token.
