@@ -1,5 +1,20 @@
 require 'java'
-require '/lib/NeticaJ.jar'
+
+loaded_netica_j = false
+
+locations = ['/Library/Java/Extensions/NeticaJ.jar', '/System/Library/Java/Extensions/NeticaJ.jar', '/usr/lib/java/NeticaJ.jar', '/lib/NeticaJ.jar']
+locations.each do |fname| 
+  if !loaded_netica_j && File.exists?(fname)
+    begin
+      require fname
+      loaded_netica_j = true
+    rescue LoadError
+      puts "NeticaJ.jar not found at '#{fname}'"
+    end
+  end
+end
+  
+raise "NeticaJ library files not found in #{locations}. See https://github.com/disruptive/netica for installation instructions." unless loaded_netica_j
 
 require "netica/version"
 require "netica/environ"
